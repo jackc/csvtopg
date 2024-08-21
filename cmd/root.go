@@ -10,12 +10,10 @@ import (
 
 	"github.com/jackc/csvtopg/csvtopg"
 	"github.com/jackc/pgx/v4"
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-var cfgFile string
+var databaseURL string
 var table string
 var dropTable bool
 
@@ -51,7 +49,7 @@ connection.`,
 			reader = file
 		}
 
-		conn, err := pgx.Connect(ctx, viper.GetString("database_url"))
+		conn, err := pgx.Connect(ctx, databaseURL)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "failed to connect to database: %v\n", err)
 			os.Exit(1)
@@ -115,41 +113,9 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
-
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.csvtopg.yaml)")
-
-	rootCmd.Flags().StringP("database-url", "d", "", "Database URL or DSN")
-	viper.BindPFlag("database_url", rootCmd.Flags().Lookup("database-url"))
-
+	rootCmd.Flags().StringVarP(&databaseURL, "database-url", "d", "", "Database URL or DSN")
 	rootCmd.Flags().StringVarP(&table, "table", "t", "", "Table in which to insert data")
 	rootCmd.Flags().BoolVar(&dropTable, "drop-table", false, "Drop existing table if it exist")
-}
-
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// Find home directory.
-		home, err := homedir.Dir()
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-
-		// Search config in home directory with name ".csvtopg" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigName(".csvtopg")
-	}
-
-	viper.AutomaticEnv() // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
-	}
 }
 
 func computeTableName(tablename, filename string) string {

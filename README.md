@@ -13,7 +13,7 @@ Why not just use psql and `\copy`?
 The Go tool chain must be installed.
 
 ```
-$ go get -u github.com/jackc/csvtopg
+$ go install github.com/jackc/csvtopg@latest
 ```
 
 ## Configuring Database Connection

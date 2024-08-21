@@ -6,7 +6,6 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 
 	"github.com/jackc/csvtopg/csvtopg"
@@ -36,7 +35,7 @@ connection.`,
 		csvFilename := args[0]
 		var reader io.ReadSeeker
 		if csvFilename == "-" {
-			buf, err := ioutil.ReadAll(os.Stdin)
+			buf, err := io.ReadAll(os.Stdin)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "failed to read from STDIN: %v\n", err)
 				os.Exit(1)

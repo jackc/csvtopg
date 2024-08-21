@@ -10,7 +10,7 @@ import (
 
 	"github.com/jackc/pgtype"
 	shopspring "github.com/jackc/pgtype/ext/shopspring-numeric"
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v5"
 )
 
 type transcoder interface {
@@ -207,7 +207,7 @@ func CopyRows(ctx context.Context, tx pgx.Tx, tableName string, columns []Column
 	}
 
 	cfs := &copyFromSource{
-		ci:       tx.Conn().ConnInfo(),
+		ci:       pgtype.NewConnInfo(),
 		columns:  columns,
 		readFunc: read,
 		values:   columnTranscodersAsEmptyInterfaces,

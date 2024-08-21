@@ -9,7 +9,8 @@ import (
 	"os"
 
 	"github.com/jackc/csvtopg/csvtopg"
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgtype"
+	"github.com/jackc/pgx/v5"
 	"github.com/spf13/cobra"
 )
 
@@ -57,7 +58,7 @@ connection.`,
 		defer conn.Close(ctx)
 
 		csvReader := csv.NewReader(reader)
-		columns, err := csvtopg.AnalyzeColumns(conn.ConnInfo(), csvReader.Read)
+		columns, err := csvtopg.AnalyzeColumns(pgtype.NewConnInfo(), csvReader.Read)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "failed to analyze columns: %v\n", err)
 			os.Exit(1)
